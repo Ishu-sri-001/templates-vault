@@ -3,6 +3,7 @@
 "use client";
 
 import {
+  useLayoutEffect,
   useRef,
   type ComponentPropsWithoutRef,
   type ElementType,
@@ -18,6 +19,25 @@ gsap.registerPlugin(useGSAP, ScrollTrigger, SplitText);
 
 // Reduced motion still reveals, just as a short fade
 const REDUCED_MOTION_FADE = 0.3;
+
+/**
+ * Hides the element for its entrance animation, but does so from JS on mount
+ * rather than with an `opacity-0` class in the server HTML.
+ *
+ * The class approach meant the text shipped invisible, so Lighthouse found no
+ * Largest Contentful Paint candidate at all and reported NO_LCP (which also
+ * takes TBT down with it, since TBT is measured relative to LCP). Hiding here
+ * instead runs in `useLayoutEffect`, i.e. before the browser paints, so the
+ * animation looks identical - but crawlers, Lighthouse and any no-JS visitor
+ * get real, visible content.
+ */
+function useHideBeforePaint(ref: { current: HTMLElement | null }) {
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (el) el.style.opacity = "0";
+  }, [ref]);
+}
+
 
 type FadeUpProps<T extends ElementType> = {
   /** Element to render as */
@@ -41,6 +61,8 @@ export function FadeUp<T extends ElementType = "div">({
 }: FadeUpProps<T>) {
   const Tag = (as ?? "div") as any;
   const ref = useRef<any>(null);
+
+  useHideBeforePaint(ref);
 
   useGSAP(() => {
     const el = ref.current;
@@ -71,7 +93,6 @@ export function FadeUp<T extends ElementType = "div">({
           onComplete: () => {
        
             el.style.removeProperty("opacity");
-            el.classList.remove("opacity-0");
           },
         });
         observer.disconnect();
@@ -84,7 +105,7 @@ export function FadeUp<T extends ElementType = "div">({
   }, []);
 
   return (
-    <Tag ref={ref} className={`opacity-0 ${className}`.trim()} {...props}>
+    <Tag ref={ref} className={className} {...props}>
       {children}
     </Tag>
   );
@@ -123,6 +144,8 @@ export function ParaAnim<T extends ElementType = "div">({
   const Tag = (as ?? "div") as any;
   const ref = useRef<any>(null);
 
+  useHideBeforePaint(ref);
+
   useGSAP(() => {
     const el = ref.current;
     if (!el) return;
@@ -142,7 +165,6 @@ export function ParaAnim<T extends ElementType = "div">({
             ease: "none",
             onComplete: () => {
               el.style.removeProperty("opacity");
-              el.classList.remove("opacity-0");
             },
           });
           observer.disconnect();
@@ -215,7 +237,7 @@ export function ParaAnim<T extends ElementType = "div">({
   }, []);
 
   return (
-    <Tag ref={ref} className={`opacity-0 ${className}`.trim()} {...props}>
+    <Tag ref={ref} className={className} {...props}>
       {children}
     </Tag>
   );
