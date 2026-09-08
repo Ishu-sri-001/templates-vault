@@ -1,0 +1,5 @@
+/* Tailwind entry for the Kyntra template. `@source` limits class detection to
+   this route group, so utilities generated for one template never depend on -
+   or get influenced by - the markup of another. */
+@import "tailwindcss" source(none);
+@source "./kyntra";
