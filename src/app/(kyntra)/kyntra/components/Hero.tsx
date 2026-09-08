@@ -8,8 +8,8 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { AppleStoreButton, PlayStoreButton } from "./Buttons";
-import phoneMockup from "../assets/kyntra-hero-mockup.png";
-import kyntraHero from "../assets/kyntra-hero.png";
+import phoneMockup from "../assets/kyntra-hero-mockup.webp";
+import kyntraHero from "../assets/kyntra-hero.webp";
 
 import { FadeUp, ParaAnim } from "./Animations/gsapAnim";
 import { useReducedMotionSync } from "./Animations/reducedMotion";

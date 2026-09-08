@@ -11,7 +11,7 @@ import EnquiryModal from "./EnquiryModal";
 import { prefersReducedMotion } from "./Animations/reducedMotion";
 import CharStaggerButton from "./effects/char-stagger-button";
 import CharStaggerPrimaryButton from "./effects/char-stagger-primary-button";
-import kyntraLogo from "../assets/kyntra-logo.png";
+import kyntraLogo from "../assets/kyntra-logo.webp";
 
 
 const CLOSED_CLIP = "inset(0% 0% 100% 0%)";
