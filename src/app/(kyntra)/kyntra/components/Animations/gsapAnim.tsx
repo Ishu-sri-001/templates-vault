@@ -19,7 +19,7 @@ gsap.registerPlugin(useGSAP, ScrollTrigger, SplitText);
 // Reduced motion still reveals, just as a short fade
 const REDUCED_MOTION_FADE = 0.3;
 
-// Longest the reveal will wait on a webfont before painting anyway
+
 const FONT_WAIT_CAP = 300;
 
 type FadeUpProps<T extends ElementType> = {
@@ -157,7 +157,9 @@ export function ParaAnim<T extends ElementType = "div">({
       return () => observer.disconnect();
     }
 
-    // Split after fonts load
+    let fontTimer: number | undefined;
+    let deferredObserver: IntersectionObserver | null = null;
+
     const init = () => {
       if (!ref.current) return;
 
@@ -197,10 +199,10 @@ export function ParaAnim<T extends ElementType = "div">({
         return;
       }
 
-
+      // Copy already on screen would otherwise wait for ScrollTrigger's first
+      // refresh before onEnter fires. Same tween, started directly.
       const rect = el.getBoundingClientRect();
       const inView = rect.top < window.innerHeight && rect.bottom > 0;
-
       if (inView) {
         gsap.to(lines, { ...to, delay });
         return;
@@ -214,29 +216,28 @@ export function ParaAnim<T extends ElementType = "div">({
       });
     };
 
-    let cancelled = false;
-    let fontTimer = 0;
-    let deferredObserver: IntersectionObserver | null = null;
-
-    const runOnce = () => {
-      if (cancelled) return;
-      cancelled = true;
-      init();
-    };
-
+    // Wait only on the faces this element actually renders in, and never
+    // longer than FONT_WAIT_CAP.
     const splitWhenFontReady = () => {
+      let done = false;
+      const runOnce = () => {
+        if (done) return;
+        done = true;
+        window.clearTimeout(fontTimer);
+        init();
+      };
+
       const fonts = document.fonts;
       if (!fonts) {
-        runOnce();
+        init();
         return;
       }
 
       const { fontFamily, fontWeight, fontSize } = getComputedStyle(el);
-
       try {
         fonts.load(`${fontWeight} ${fontSize} ${fontFamily}`).then(runOnce, runOnce);
       } catch {
-        // Malformed shorthand - fall back to the page-wide signal
+        // Malformed shorthand: fall back to the whole-page promise
         fonts.ready.then(runOnce, runOnce);
       }
 
@@ -255,6 +256,7 @@ export function ParaAnim<T extends ElementType = "div">({
         ([entry], obs) => {
           if (!entry.isIntersecting) return;
           obs.disconnect();
+          deferredObserver = null;
           splitWhenFontReady();
         },
         { rootMargin: "200% 0px" },
@@ -263,9 +265,8 @@ export function ParaAnim<T extends ElementType = "div">({
     }
 
     return () => {
-      cancelled = true;
-      deferredObserver?.disconnect();
       window.clearTimeout(fontTimer);
+      deferredObserver?.disconnect();
       trigger?.kill();
       split?.revert();
     };

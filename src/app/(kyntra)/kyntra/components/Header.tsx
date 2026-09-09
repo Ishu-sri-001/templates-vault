@@ -3,17 +3,17 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import Image from "next/image";
 import { useLenis } from "lenis/react";
 import gsap from "gsap";
+import dynamic from "next/dynamic";
 import { prefersReducedMotion } from "./Animations/reducedMotion";
 import CharStaggerButton from "./effects/char-stagger-button";
 import CharStaggerPrimaryButton from "./effects/char-stagger-primary-button";
 import kyntraLogo from "../assets/kyntra-logo.webp";
 
-
+// Above the fold: keep the modal out of the critical bundle until it is used
 const EnquiryModal = dynamic(() => import("./EnquiryModal"));
 
 
@@ -40,7 +40,6 @@ const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const lastYRef = useRef(0);
   const [enquiryOpen, setEnquiryOpen] = useState(false);
-  // Latches on first open so the modal stays mounted through its close tween
   const [enquiryUsed, setEnquiryUsed] = useState(false);
   const [revealed, setRevealed] = useState(false);
 
@@ -202,6 +201,7 @@ const Header: React.FC = () => {
               alt="Kyntra"
               className="h-full w-full object-contain"
               loading="eager"
+              fetchPriority="high"
             />
           </div>
         </Link>

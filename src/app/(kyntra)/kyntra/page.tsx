@@ -1,7 +1,7 @@
 // Built using Hyperiux Vault: https://vault.hyperiux.com
 import type { Metadata } from "next";
-import ogImage from "./assets/kyntra-og.jpg";
 import dynamic from "next/dynamic";
+import ogImage from "./assets/kyntra-og.jpg";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
 import About from "./components/About";
@@ -10,6 +10,8 @@ import LenisSmoothScroll from "./components/LenisSmoothScroll";
 import ScrollTopOnLoad from "./components/ScrollTopOnLoad";
 import IntroOverlay from "./components/IntroOverlay";
 
+// Below the fold: these still server-render, only their JS is deferred, so
+// HTML, SEO and no-JS content are unchanged.
 const Features = dynamic(() => import("./components/Features"));
 const Smarter = dynamic(() => import("./components/Smarter"));
 const HowKyntraWorks = dynamic(() => import("./components/HowKyntraWorks"));

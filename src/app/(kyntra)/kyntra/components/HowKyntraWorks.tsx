@@ -8,7 +8,7 @@ import gsap from "gsap";
 import ScrollTrigger from "gsap/dist/ScrollTrigger";
 import CharStaggerPrimaryButton from "./effects/char-stagger-primary-button";
 
-
+// Loaded on first interaction
 const EnquiryModal = dynamic(() => import("./EnquiryModal"));
 
 import { FadeUp, ParaAnim } from "./Animations/gsapAnim";
@@ -42,7 +42,6 @@ const LINE_HEIGHT = 150;
 
 export default function HowKyntraWorks() {
   const [enquiryOpen, setEnquiryOpen] = useState(false);
-  // Latches on first open so the modal survives its close tween
   const [enquiryUsed, setEnquiryUsed] = useState(false);
   const sectionRef = useRef<HTMLElement | null>(null);
   const lineRefs = useRef<SVGLineElement[]>([]);

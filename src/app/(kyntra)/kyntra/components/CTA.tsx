@@ -8,13 +8,12 @@ import Link from "next/link";
 import CharStaggerPrimaryButton from "./effects/char-stagger-primary-button";
 import { FadeUp } from "./Animations/gsapAnim";
 
-// Interaction-only, so it stays out of the section's chunk until first open.
+// Loaded on first interaction
 const DownloadAppModal = dynamic(() => import("./DownloadAppModal"));
 
 const CTA = () => {
   const [hovered, setHovered] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  // Latches on first open so the modal survives its close tween
   const [modalUsed, setModalUsed] = useState(false);
 
   // Suppress the default hash jump
