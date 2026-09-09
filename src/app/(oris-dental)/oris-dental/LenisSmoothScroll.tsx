@@ -1,9 +1,17 @@
-"use client";
+// Built using Hyperiux Vault: https://vault.hyperiux.com
 
+"use client";
 import gsap from "gsap";
 import { useEffect, useRef } from "react";
 import { ReactLenis, type LenisRef } from "lenis/react";
 import "lenis/dist/lenis.css";
+
+function prefersReducedMotion() {
+  return (
+    typeof window !== "undefined" &&
+    window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches === true
+  );
+}
 
 interface LenisSmoothScrollProps {
   duration?: number;
@@ -13,16 +21,9 @@ interface LenisSmoothScrollProps {
   touchMultiplier?: number;
 }
 
-function prefersReducedMotion() {
-  return (
-    typeof window !== "undefined" &&
-    window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches === true
-  );
-}
-
 const LenisSmoothScroll = ({
   duration = 1.35,
-  lerp = 0.1,
+  lerp = 0.075,
   smoothWheel = true,
   wheelMultiplier = 0.8,
   touchMultiplier = 0.8,
@@ -39,8 +40,6 @@ const LenisSmoothScroll = ({
     return () => gsap.ticker.remove(update);
   }, []);
 
-  // Reduced motion: don't mount Lenis at all, so the page falls back to plain
-  // native scrolling exactly as if this component weren't present.
   if (prefersReducedMotion()) {
     return null;
   }
@@ -50,11 +49,11 @@ const LenisSmoothScroll = ({
       root
       options={{
         autoRaf: false,
-        duration,
-        lerp,
-        smoothWheel,
-        wheelMultiplier,
-        touchMultiplier,
+        duration: duration,
+        lerp: lerp,
+        smoothWheel: smoothWheel,
+        wheelMultiplier: wheelMultiplier,
+        touchMultiplier: touchMultiplier,
         easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       }}
       ref={lenisRef}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Header from "./Header";
 import Hero from "./Hero";
+import "./oris-dental.css";
 import OrisWrapper from "./OrisWrapper";
 import AboutOris from "./AboutOris";
 import CareComfort from "./CareComfort";

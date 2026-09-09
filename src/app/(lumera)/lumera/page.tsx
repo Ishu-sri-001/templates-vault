@@ -1,4 +1,5 @@
 // Built using Hyperiux Vault: https://vault.hyperiux.com
+import "./lumera-styles.css";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import ScrollTopOnLoad from "./ScrollTopOnLoad";
@@ -8,6 +9,7 @@ import Header from "./Header";
 import Hero from "./Hero";
 import LenisSmoothScroll from "./LenisSmoothScroll";
 import EnquiryModalProvider from "./EnquiryModal";
+
 
 const About = dynamic(() => import("./About"));
 const HorizontalFeatureRevealSection = dynamic(

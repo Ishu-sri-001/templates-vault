@@ -1,4 +1,5 @@
 // Built using Hyperiux Vault: https://vault.hyperiux.com
+import "./kyntra-styles.css";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import ogImage from "./assets/kyntra-og.jpg";

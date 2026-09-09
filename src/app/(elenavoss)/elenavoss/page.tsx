@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import ogImage from "./assets/og-image.webp";
 import Hero from "./Hero";
+import "./elenavoss.css";
 import ReactLenis from "lenis/react";
 import Header from "./Header";
 import { GetInTouchModalProvider } from "./GetInTouchModal";

@@ -1,8 +1,10 @@
+// Built using Hyperiux Vault: https://vault.hyperiux.com
 
 "use client";
 
 import { useEffect } from "react";
 import { useLenis } from "lenis/react";
+
 
 const INLINE_RESTORATION_RESET =
   "try{if(!location.hash)history.scrollRestoration='manual'}catch(e){}";
@@ -43,6 +45,8 @@ export default function ScrollTopOnLoad() {
 
   return (
     <script
+      // Runs while the document is still parsing, ahead of hydration and ahead
+      // of the browser's own restore.
       dangerouslySetInnerHTML={{ __html: INLINE_RESTORATION_RESET }}
     />
   );
