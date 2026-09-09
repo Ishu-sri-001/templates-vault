@@ -19,6 +19,9 @@ gsap.registerPlugin(useGSAP, ScrollTrigger, SplitText);
 // Reduced motion still reveals, just as a short fade
 const REDUCED_MOTION_FADE = 0.3;
 
+// Longest the reveal will wait on a webfont before painting anyway
+const FONT_WAIT_CAP = 300;
+
 type FadeUpProps<T extends ElementType> = {
   /** Element to render as */
   as?: T;
@@ -194,6 +197,15 @@ export function ParaAnim<T extends ElementType = "div">({
         return;
       }
 
+
+      const rect = el.getBoundingClientRect();
+      const inView = rect.top < window.innerHeight && rect.bottom > 0;
+
+      if (inView) {
+        gsap.to(lines, { ...to, delay });
+        return;
+      }
+
       trigger = ScrollTrigger.create({
         trigger: el,
         start: top,
@@ -202,13 +214,58 @@ export function ParaAnim<T extends ElementType = "div">({
       });
     };
 
-    if (document.fonts?.ready) {
-      document.fonts.ready.then(init);
-    } else {
+    let cancelled = false;
+    let fontTimer = 0;
+    let deferredObserver: IntersectionObserver | null = null;
+
+    const runOnce = () => {
+      if (cancelled) return;
+      cancelled = true;
       init();
+    };
+
+    const splitWhenFontReady = () => {
+      const fonts = document.fonts;
+      if (!fonts) {
+        runOnce();
+        return;
+      }
+
+      const { fontFamily, fontWeight, fontSize } = getComputedStyle(el);
+
+      try {
+        fonts.load(`${fontWeight} ${fontSize} ${fontFamily}`).then(runOnce, runOnce);
+      } catch {
+        // Malformed shorthand - fall back to the page-wide signal
+        fonts.ready.then(runOnce, runOnce);
+      }
+
+      fontTimer = window.setTimeout(runOnce, FONT_WAIT_CAP);
+    };
+
+
+    const box = el.getBoundingClientRect();
+    const nearViewport =
+      box.top < window.innerHeight * 1.5 && box.bottom > -window.innerHeight;
+
+    if (nearViewport) {
+      splitWhenFontReady();
+    } else {
+      deferredObserver = new IntersectionObserver(
+        ([entry], obs) => {
+          if (!entry.isIntersecting) return;
+          obs.disconnect();
+          splitWhenFontReady();
+        },
+        { rootMargin: "200% 0px" },
+      );
+      deferredObserver.observe(el);
     }
 
     return () => {
+      cancelled = true;
+      deferredObserver?.disconnect();
+      window.clearTimeout(fontTimer);
       trigger?.kill();
       split?.revert();
     };

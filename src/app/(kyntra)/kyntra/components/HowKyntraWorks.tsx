@@ -3,10 +3,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/dist/ScrollTrigger";
 import CharStaggerPrimaryButton from "./effects/char-stagger-primary-button";
-import EnquiryModal from "./EnquiryModal";
+
+
+const EnquiryModal = dynamic(() => import("./EnquiryModal"));
 
 import { FadeUp, ParaAnim } from "./Animations/gsapAnim";
 import { prefersReducedMotion } from "./Animations/reducedMotion";
@@ -39,6 +42,8 @@ const LINE_HEIGHT = 150;
 
 export default function HowKyntraWorks() {
   const [enquiryOpen, setEnquiryOpen] = useState(false);
+  // Latches on first open so the modal survives its close tween
+  const [enquiryUsed, setEnquiryUsed] = useState(false);
   const sectionRef = useRef<HTMLElement | null>(null);
   const lineRefs = useRef<SVGLineElement[]>([]);
   const dotRefs = useRef<SVGCircleElement[]>([]);
@@ -196,6 +201,7 @@ export default function HowKyntraWorks() {
           href="#"
           onClick={(event) => {
             event.preventDefault();
+            setEnquiryUsed(true);
             setEnquiryOpen(true);
           }}
           hoverColor="#ffffff"
@@ -207,7 +213,9 @@ export default function HowKyntraWorks() {
         />
       </FadeUp>
 
-      <EnquiryModal open={enquiryOpen} onClose={() => setEnquiryOpen(false)} />
+      {enquiryUsed && (
+        <EnquiryModal open={enquiryOpen} onClose={() => setEnquiryOpen(false)} />
+      )}
     </section>
   );
 }
